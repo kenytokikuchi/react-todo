@@ -1,13 +1,13 @@
 import React, { useState } from "react";
+import { IncompleteArea } from "./compornents/IncompleteArea";
+import { CompleteArea } from "./compornents/CompleteArea";
+import { InputTodo } from "./compornents/InputTodo";
 import "./styles.css";
 
 export const App = () => {
-  const [todoText, setTodoText] = useState("");
-  const [incompleteTodos, setIncompleteTodos] = useState([
-    "あああああ",
-    "いいいいい"
-  ]);
-  const [completeTodos, setCompleteTodos] = useState(["aaaaa", "iiiii"]);
+  const [todoText, setTodoText] = useState();
+  const [incompleteTodos, setIncompleteTodos] = useState([]);
+  const [completeTodos, setCompleteTodos] = useState([]);
 
   // テキストで入力した文字を変化させる関すを作成.値が入力されるたびuseStateの中が更新される
   const onChangeTodoText = (e) => setTodoText(e.target.value);
@@ -21,14 +21,14 @@ export const App = () => {
     setTodoText("");
   };
 
-  const onClickDekete = (index) => {
+  const onClickDelete = (index) => {
     const newTodos = [...incompleteTodos];
     // spliceは第１引数に指定した数、第２引数に指定した数字分削除する
     newTodos.splice(index, 1);
     setIncompleteTodos(newTodos);
   };
 
-  const onClickDeketeCompleteArea = (index) => {
+  const onClickDeleteCompleteArea = (index) => {
     const newTodos = [...completeTodos];
     // spliceは第１引数に指定した数、第２引数に指定した数字分削除する
     newTodos.splice(index, 1);
@@ -56,47 +56,28 @@ export const App = () => {
 
   return (
     <>
-      <div className="input-area">
-        {/* 入力するたびに値を更新する処理を書く. onchangeを使用する */}
-        <input
-          placeholder="TODOを入力"
-          value={todoText}
-          onChange={onChangeTodoText}
-        />
-        <button onClick={onClickAdd}>追加</button>
-      </div>
-      <div className="incomplete-area">
-        <p className="title">未完了のTODO</p>
-        <ul>
-          {/* map関数ｍの第２引数でキーを指定できる */}
-          {incompleteTodos.map((todo, index) => {
-            return (
-              <div key={todo} className="list-row">
-                <li>{todo}</li>
-                <button onClick={() => onClickComplete(index)}>完了</button>
-                {/* 関数に引数を渡したいときはアロー関数を入れる */}
-                <button onClick={() => onClickDekete(index)}>削除</button>
-              </div>
-            );
-          })}
-        </ul>
-      </div>
-      <div className="complete-area">
-        <p className="title">完了のTODO</p>
-        <ul>
-          {completeTodos.map((todo, index) => {
-            return (
-              <div key={todo} className="list-row">
-                <li>{todo}</li>
-                <button onClick={() => onClickBuck(index)}>戻す</button>
-                <button onClick={() => onClickDeketeCompleteArea(index)}>
-                  削除
-                </button>
-              </div>
-            );
-          })}
-        </ul>
-      </div>
+      <InputTodo
+        todoText={todoText}
+        onChange={onChangeTodoText}
+        onClick={onClickAdd}
+        disabled={incompleteTodos.length >= 5}
+      />
+      {incompleteTodos.length >= 5 && (
+        <p style={{ color: "red" }}>
+          登録できるtodoは5個までだぞ〜。消化しろ〜。
+        </p>
+      )}
+
+      <IncompleteArea
+        incompleteTodos={incompleteTodos}
+        onClickComplete={onClickComplete}
+        onClickDelete={onClickDelete}
+      />
+      <CompleteArea
+        Todos={completeTodos}
+        Buck={onClickBuck}
+        Delete={onClickDeleteCompleteArea}
+      />
     </>
   );
 };
